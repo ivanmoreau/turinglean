@@ -7,22 +7,17 @@ inductive Direction
   | Left
   | Right
   | Stay
-
 notation `State` := ℕ
 notation `Symbol` := char
 structure Smt :=
   mk :: (fst: State) (snd: Symbol) (trd: Direction)
---notation `Smt` := State × Symbol × Direction
 notation `Tape` := list Symbol
 structure TapeParts :=
   mk :: (fst: Tape) (snd: Symbol) (trd: Tape)
---notation `TapeParts` := Tape × Symbol × Tape
--- (a : State) (b : State → Symbol → Smt) (c : State)
 structure Machine :=
   mk :: (init_state: State) 
         (function: State → Symbol → Smt) 
         (accept_state: State)
-
 structure MacState :=
   mk :: (state: State) 
         (tape: TapeParts)
@@ -34,7 +29,6 @@ def moveTape : TapeParts → Direction → TapeParts
   | (TapeParts.mk a b c) Direction.Right := TapeParts.mk (a ++ [b]) (head c) (tail c)
   | a Direction.Stay := a
 
-
 /- We are giving a number big enough, so we assure the program ends. -/
 def step : ℕ → Machine → TapeParts → list MacState → list MacState
   | 0 (Machine.mk q0 f qf) (TapeParts.mk a b c) mac := []
@@ -45,6 +39,7 @@ def step : ℕ → Machine → TapeParts → list MacState → list MacState
         step n (Machine.mk x f qf) (moveTape (TapeParts.mk a y c) z) (
         mac ++ [MacState.mk q0 (TapeParts.mk a b c)])
 
+/- We are giving a number big enough, so we assure the program ends. -/
 def run : Machine → Tape → list MacState
   | m t := step 1000000000000 m (TapeParts.mk [] (head t) (tail t)) []
 
